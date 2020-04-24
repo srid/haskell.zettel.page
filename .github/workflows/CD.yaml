@@ -7,21 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: cachix/install-nix-action@v8
-    # This also runs nix-build.
-    - uses: cachix/cachix-action@v5
-      with:
-        name: srid
-        skipNixBuild: true
-        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-        # Only needed for private caches
-        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - name: Install neuron
+    # - uses: cachix/install-nix-action@v8
+    # # This also runs nix-build.
+    # - uses: cachix/cachix-action@v5
+    #   with:
+    #     name: srid
+    #     skipNixBuild: true
+    #     signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    #     # Only needed for private caches
+    #     authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    # - name: Install neuron
+    #   run: |
+    #     nix-env -iE '_: let src = builtins.fetchGit { url = "https://github.com/srid/neuron"; ref = "master"; }; in import src.outPath { gitRev = src.shortRev; }'
+    # - name: Generate static site
+    #   run: |
+    #     neuron -d . rib
+    - name: Run neuron in docker
       run: |
-        nix-env -iE '_: let src = builtins.fetchGit { url = "https://github.com/srid/neuron"; ref = "master"; }; in import src.outPath { gitRev = src.shortRev; }'
-    - name: Generate static site
-      run: |
-        neuron -d . rib
+        docker run --rm -v .:/root/zettelkasten sridca/neuron:test neuron rib
     - name: Deploy to Netlify
       uses: netlify/actions/cli@master
       with:
