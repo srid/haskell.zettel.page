@@ -15,5 +15,7 @@ jobs:
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
         # Only needed for private caches
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix-env -iE '_: let src = builtins.fetchGit { url = "https://github.com/srid/neuron"; ref = "master"; }; in import src.outPath { gitRev = src.shortRev; }'
-    - run: neuron -d . rib
+    - run: |
+        nix-env -iE '_: let src = builtins.fetchGit { url = "https://github.com/srid/neuron"; ref = "master"; }; in import src.outPath { gitRev = src.shortRev; }'
+    - run: |
+        neuron -d . rib
