@@ -12,6 +12,7 @@ jobs:
     - uses: cachix/cachix-action@v5
       with:
         name: srid
+        skipNixBuild: true
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
         # Only needed for private caches
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
