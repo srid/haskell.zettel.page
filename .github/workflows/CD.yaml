@@ -1,34 +1,20 @@
 name: "Continuous Deployment"
 on:
   push:
-  pull_request:
+    branches:
+      - master
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    # - uses: cachix/install-nix-action@v8
-    # # This also runs nix-build.
-    # - uses: cachix/cachix-action@v5
-    #   with:
-    #     name: srid
-    #     skipNixBuild: true
-    #     signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    #     # Only needed for private caches
-    #     authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    # - name: Install neuron
-    #   run: |
-    #     nix-env -iE '_: let src = builtins.fetchGit { url = "https://github.com/srid/neuron"; ref = "master"; }; in import src.outPath { gitRev = src.shortRev; }'
-    # - name: Generate static site
-    #   run: |
-    #     neuron -d . rib
     - name: Run neuron in docker
       run: |
         docker run --rm -v $(pwd):/root/zettelkasten sridca/neuron:test neuron rib
     - name: Deploy to Netlify
       uses: netlify/actions/cli@master
       with:
-        args: deploy --dir=.neuron/output --site=${NETLIFY_SITE_ID}
+        args: deploy --prod --dir=.neuron/output --site=${NETLIFY_SITE_ID}
       env:
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
