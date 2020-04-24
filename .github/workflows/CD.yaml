@@ -24,7 +24,7 @@ jobs:
     #     neuron -d . rib
     - name: Run neuron in docker
       run: |
-        docker run --rm -v .:/root/zettelkasten sridca/neuron:test neuron rib
+        docker run --rm -v $(pwd):/root/zettelkasten sridca/neuron:test neuron rib
     - name: Deploy to Netlify
       uses: netlify/actions/cli@master
       with:
