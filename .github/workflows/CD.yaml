@@ -16,14 +16,16 @@ jobs:
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
         # Only needed for private caches
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: |
+    - name: Install neuron
+      run: |
         nix-env -iE '_: let src = builtins.fetchGit { url = "https://github.com/srid/neuron"; ref = "master"; }; in import src.outPath { gitRev = src.shortRev; }'
-    - run: |
+    - name: Generate static site
+      run: |
         neuron -d . rib
     - name: Deploy to Netlify
       uses: netlify/actions/cli@master
       with:
-        args: deploy --dir=site --functions=functions
+        args: deploy --dir=.neuron/output --functions=functions
       env:
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
